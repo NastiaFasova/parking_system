@@ -2,6 +2,7 @@ HELP.md
 .gradle
 gradlew
 gradlew.bat
+.gitattributes
 gradle/
 logs/
 build/
