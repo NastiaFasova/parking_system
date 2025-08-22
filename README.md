@@ -145,6 +145,85 @@ src/main/java/com/parkingsystem/
 
 ## 🚀 Getting Started
 
+## 🐳 Running with Docker
+
+### Prerequisites for Docker
+
+- Docker installed on your system
+- No need for Java or Gradle locally (Docker handles everything!)
+
+### Option 1: Using Pre-built Image
+
+The easiest way to run the application is using the pre-built Docker image:
+
+```bash
+# Pull and run the application
+docker run -p 8090:8080 nastiafasova/parking_system
+```
+
+**Access the application:**
+- API Base URL: `http://localhost:8090`
+- Swagger UI: `http://localhost:8090/swagger-ui.html`
+- H2 Console: `http://localhost:8090/h2-console`
+
+### Option 2: Build from Source
+
+If you want to build the image yourself or make modifications:
+
+#### 1. Clone the repository
+```bash
+git clone https://github.com/NastiaFasova/parking-system.git
+cd parking-system
+```
+
+#### 2. Build the Docker image
+```bash
+docker build -t parking-system .
+```
+
+#### 3. Run the container
+```bash
+docker run -p 8090:8080 parking-system
+```
+
+### Docker Configuration
+
+The application uses a **multi-stage Dockerfile** that:
+- ✅ Compiles the application inside Docker (no local Java/Gradle needed)
+- ✅ Creates an optimized runtime image with JRE only
+- ✅ Handles dependency caching for faster builds
+
+```dockerfile
+# Build stage - compiles the application
+FROM gradle:8-jdk21 AS build
+WORKDIR /app
+COPY build.gradle settings.gradle ./
+COPY gradle gradle
+COPY gradlew ./
+COPY src ./src
+RUN ./gradlew build -x test
+
+# Runtime stage - runs the application
+FROM openjdk:21-jre-slim
+WORKDIR /app
+COPY --from=build /app/build/libs/ParkingSystem-*.jar /app/ParkingSystem.jar
+EXPOSE 8080
+CMD ["java", "-jar", "/app/ParkingSystem.jar"]
+```
+
+### Docker Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `docker run -p 8090:8080 nastiafasova/parking_system` | Run pre-built image |
+| `docker build -t parking-system .` | Build image from source |
+| `docker ps` | List running containers |
+| `docker logs <container_id>` | View container logs |
+| `docker stop <container_id>` | Stop running container |
+| `docker run -d -p 8090:8080 nastiafasova/parking_system` | Run in background (detached) |
+
+### Option 3: Build with Gradle
+
 ### Prerequisites
 
 - Java 21 
