@@ -535,6 +535,7 @@ curl -X GET http://localhost:8080/api/999/available-slots \
 - **Motorcycle License Plates**: 4-7 alphanumeric characters
 - **Truck License Plates**: 7-10 alphanumeric characters
 - **Slot Types**: Fixed set of COMPACT, LARGE, MOTORCYCLE, HANDICAPPED
+- **Vehicle Types**: Fixed set of CAR, MOTORCYCLE, TRUCK
 
 ## 🚧 Future Enhancements
 
