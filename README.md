@@ -193,24 +193,6 @@ The application uses a **multi-stage Dockerfile** that:
 - ✅ Creates an optimized runtime image with JRE only
 - ✅ Handles dependency caching for faster builds
 
-```dockerfile
-# Build stage - compiles the application
-FROM gradle:8-jdk21 AS build
-WORKDIR /app
-COPY build.gradle settings.gradle ./
-COPY gradle gradle
-COPY gradlew ./
-COPY src ./src
-RUN ./gradlew build -x test
-
-# Runtime stage - runs the application
-FROM openjdk:21-jre-slim
-WORKDIR /app
-COPY --from=build /app/build/libs/ParkingSystem-*.jar /app/ParkingSystem.jar
-EXPOSE 8080
-CMD ["java", "-jar", "/app/ParkingSystem.jar"]
-```
-
 ### Docker Commands Reference
 
 | Command | Description |
