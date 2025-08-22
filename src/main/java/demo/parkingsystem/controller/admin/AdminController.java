@@ -5,6 +5,7 @@ import demo.parkingsystem.dto.MessageDto;
 import demo.parkingsystem.dto.parkingLot.ParkingLotDto;
 import demo.parkingsystem.dto.parkingLot.ParkingLotResponseDto;
 import demo.parkingsystem.dto.parkingLot.ParkingLotWithLevelsDto;
+import demo.parkingsystem.dto.parkingSlot.AddParkingSlotDto;
 import demo.parkingsystem.dto.parkingSlot.ParkingSlotDto;
 import demo.parkingsystem.dto.parkingSlot.UpdateSlotStatusRequest;
 import demo.parkingsystem.model.enums.ParkingSlotType;
@@ -32,7 +33,7 @@ public class AdminController {
     private final ParkingSlotService parkingSlotService;
 
     @PostMapping("/")
-    public ResponseEntity<ParkingLotResponseDto> create(ParkingLotDto createParkingLotRequestDto) {
+    public ResponseEntity<ParkingLotResponseDto> create(@RequestBody ParkingLotDto createParkingLotRequestDto) {
         return ResponseEntity.ok(parkingLotService.create(createParkingLotRequestDto));
     }
 
@@ -53,12 +54,12 @@ public class AdminController {
         return ResponseEntity.ok(parkingLotService.removeLevel(parkingLotId, levelId));
     }
 
-    @GetMapping("/{parking-id}/{level-id}/add-slot")
+    @PostMapping("/{parking-id}/{level-id}/add-slot")
     public ResponseEntity<LevelWithSlotsDto> addParkingSlot(@PathVariable("parking-id") Long parkingLotId,
                                                             @PathVariable("level-id") Long levelId,
-                                                            String parkingSlotType) {
+                                                            @RequestBody AddParkingSlotDto parkingSlotDto) {
         return ResponseEntity.ok(levelService.addParkingSlot(parkingLotId, levelId,
-                ParkingSlotType.valueOf(parkingSlotType)));
+                ParkingSlotType.valueOf(parkingSlotDto.getParkingSlotType())));
     }
 
     @DeleteMapping("/{parking-id}/{level-id}/{slot-id}")

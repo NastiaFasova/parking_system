@@ -1,9 +1,7 @@
 package demo.parkingsystem.service.impl;
 
-import demo.parkingsystem.factory.slot.ParkingSlotFactory;
 import demo.parkingsystem.factory.vehicle.VehicleFactory;
 import demo.parkingsystem.model.Vehicle;
-import demo.parkingsystem.model.enums.ParkingSlotType;
 import demo.parkingsystem.model.enums.VehicleType;
 import demo.parkingsystem.service.VehicleFactoryService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -48,20 +48,6 @@ public class LevelServiceImpl implements LevelService {
 
     @Override
     public Level findById(LevelId levelId) {
-        log.info("Searching for Level with ID: {}", levelId);
-        log.info("ParkingLotId: {} (type: {})", levelId.getParkingLotId(), levelId.getParkingLotId().getClass().getSimpleName());
-        log.info("LevelNumber: {} (type: {})", levelId.getLevelNumber(), levelId.getLevelNumber().getClass().getSimpleName());
-
-        // Debug: Check what's actually in the database
-        List<Level> allLevels = levelRepository.findAll();
-        log.info("All levels in database:");
-        for (Level level : allLevels) {
-            log.info("Found Level - ParkingLotId: {} (type: {}), LevelNumber: {} (type: {})",
-                    level.getId().getParkingLotId(),
-                    level.getId().getParkingLotId().getClass().getSimpleName(),
-                    level.getId().getLevelNumber(),
-                    level.getId().getLevelNumber().getClass().getSimpleName());
-        }
         return levelRepository.findById(levelId).orElseThrow(()
                 -> new EntityNotFoundByIdException("Level was not found by id: " + levelId));
     }

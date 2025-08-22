@@ -217,7 +217,7 @@ Content-Type: application/json
 | POST   | `/auth/register`                                  | Register new user                     | None          |
 | POST   | `/admin/`                                         | Create parking lot                    | ADMIN         |
 | GET    | `/admin/{parking-id}/add-level`                   | Add level                             | ADMIN         |
-| GET    | `/admin/{parking-id}/{level-id}/add-slot`         | Add slot                              | ADMIN         |
+| POST   | `/admin/{parking-id}/{level-id}/add-slot`         | Add slot                              | ADMIN         |
 | PATCH  | `/admin/{parking-id}/{level-id}/{slot-id}/status` | Update slot status                    | ADMIN         |
 | DELETE | `/admin/{parking-id}`                             | Delete parking lot                    | ADMIN         |
 | DELETE | `/admin/{parking-id}/{level-id}`                  | Delete level of parking lot           | ADMIN         |
@@ -232,281 +232,294 @@ Content-Type: application/json
 
 **Login to get JWT token:**
 ```bash
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "admin123"
+  }'
+```
+
+**Response:**
+```json
+{
+  "token": "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1...."
+}
+```
+
+> 💡 **Note**: Copy the token from the response and use it in the `Authorization: Bearer <token>` header for subsequent requests.
+
+---
+
+### 2. Admin - Parking Lot Setup
+
+#### Step 1: Create a Parking Lot
+
+```bash
 curl -X 'POST' \
-  'http://localhost:8080/auth/login' \
+  'http://localhost:8080/admin/' \
   -H 'accept: */*' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInN1YiI6ImFkbWluIiwiaWF0IjoxNzU1ODY1NTUwLCJleHAiOjE3NTYwMDk1NTB9.jdxd29h-7qj5YKiou0vlSIbaBit8tNrm0K9zi9xAQ0hd53I3gp6Qy9ON_Hjj4wsz' \
   -H 'Content-Type: application/json' \
   -d '{
-  "username": "admin",
-  "password": "admin123"
+  "name": "Downtown Parking"
 }'
 ```
 
 **Response:**
 ```json
 {
-   "token": "eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1...."
+  "name": "Downtown Parking",
+  "id": "1"
 }
 ```
 
-### 2. Parking lot Management
+#### Step 2: Add Levels to Parking Lot
 
-**Add a parking lot:**
+```bash
+curl -X GET http://localhost:8080/admin/1/add-level \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+**Response:**
+```json
+{
+  "name": "Downtown Parking",
+  "levels": 1
+}
+```
+
+#### Step 3: Add Parking Slots
+
+**Add a large slot:**
 ```bash
 curl -X 'POST' \
-  'http://localhost:8080/admin/?name=Parking%20%27Forest%27' \
-  -H 'accept: */*' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2xlIjoiQURNSU4..."' \
-  -d ''
-```
-
-**Response:**
-```json
-{
-   "name": "Parking 'Forest'",
-   "id": "1"
-}
-```
-
-**Add a level into parking lot:**
-```bash
-curl -X 'GET' \
-  'http://localhost:8080/admin/1/add-level' \
-  -H 'accept: */*' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9...."'
-```
-
-**Response:**
-```json
-{
-   "name": "Parking 'Forest'",
-   "levels": 1
-}
-```
-
-**Add a slot into level of parking lot:**
-```bash
-curl -X 'GET' \
-  'http://localhost:8080/admin/1/1/add-slot?parkingSlotType=LARGE' \
-  -H 'accept: */*' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9...."'
-```
-
-**Response:**
-```json
-{
-   "parkingLotId": 1,
-   "levelNumber": 1,
-   "parkingSlots": [
-      {
-         "parkingSlotNumber": 1,
-         "type": "LARGE",
-         "occupied": false
-      }
-   ]
-}
-```
-
-**Change a parking slot status availability:**
-```bash
-curl -X 'PATCH' \
-  'http://localhost:8080/admin/1/1/1/status' \
-  -H 'accept: */*' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb..."' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "occupied": true
-}'
-```
-
-**Response:**
-```json
-{
-   "parkingSlotNumber": 1,
-   "type": "LARGE",
-   "occupied": true
-}
-```
-
-**Remove slot from level of a parking lot:**
-```bash
-curl -X 'DELETE' \
-  'http://localhost:8080/admin/1/1/1' \
-  -H 'accept: */*' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.e..."'
-```
-
-**Response:**
-```json
-{
-   "parkingLotId": 1,
-   "levelNumber": 1,
-   "parkingSlots": []
-}
-```
-
-**Remove slot level from parking lot:**
-```bash
-curl -X 'DELETE' \
-  'http://localhost:8080/admin/1/1' \
-  -H 'accept: */*' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9..."'
-```
-
-**Response:**
-```json
-{
-   "name": "Parking 'Forest'",
-   "levels": 0
-}
-```
-
-**Remove a parking lot:**
-```bash
-curl -X 'DELETE' \
-  'http://localhost:8080/admin/1' \
-  -H 'accept: */*' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9...."'
-```
-
-
-**Response:**
-```json
-{
-   "message": "Parking Lot was successfully removed"
-}
-```
-
-
-### 3. Checking, checkout, check available slots
-
-Be aware, that for check-in and check-out, you should login as USER (not ADMIN)
-
-**Check-in:**
-```bash
-curl -X 'POST' \
-  'http://localhost:8080/api/check-in' \
+  'http://localhost:8080/admin/1/1/add-slot' \
   -H 'accept: */*' \
   -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9...' \
   -H 'Content-Type: application/json' \
   -d '{
-  "licencePlate": "1839781",
-  "vehicleType": "CAR",
-  "parkingLotId": 2
+  "parkingSlotType": "LARGE"
 }'
 ```
 
 **Response:**
 ```json
 {
-   "entryDate": "2025-08-22T15:02:38.301553",
-   "parkingSlotNumber": 1,
-   "levelNumber": 1,
-   "parkingLotName": "Parking 'Forest'",
-   "parkingSlotType": "LARGE",
-   "licensePlate": "1839781",
-   "vehicleType": "CAR"
+  "parkingLotId": 1,
+  "levelNumber": 1,
+  "parkingSlots": [
+    {
+      "parkingSlotNumber": 1,
+      "type": "LARGE",
+      "occupied": false
+    }
+  ]
 }
 ```
 
-**Response Failure Example:**
-```json
-{
-   "status": 400,
-   "error": "VALIDATION_ERROR",
-   "message": "Invalid car license plate format",
-   "timestamp": "2025-08-22T15:03:37.679242"
-}
-```
+---
 
-**Check-out:**
+### 3. Admin - Slot Management
+
+#### Change Slot Status (Manually occupy/free a slot)
+
 ```bash
-curl -X 'POST' \
-  'http://localhost:8080/api/check-out' \
-  -H 'accept: */*' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.e..' \
-  -H 'Content-Type: application/json' \
+curl -X PATCH http://localhost:8080/admin/1/1/1/status \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
   -d '{
-  "licensePlate": "1839781",
-  "parkingLotId": 2
-}'
+    "occupied": true
+  }'
 ```
 
 **Response:**
 ```json
 {
-   "entryDate": "2025-08-22T15:02:38.301553",
-   "exitDate": "2025-08-22T15:04:17.618682",
-   "duration": "0h 1m 99s",
-   "fee": 2
+  "parkingSlotNumber": 1,
+  "type": "LARGE",
+  "occupied": true
 }
 ```
 
-**Response Failure example:**
+#### Remove Resources
+
+**Remove a slot:**
+```bash
+curl -X DELETE http://localhost:8080/admin/1/1/1 \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+**Remove a level:**
+```bash
+curl -X DELETE http://localhost:8080/admin/1/1 \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+**Remove entire parking lot:**
+```bash
+curl -X DELETE http://localhost:8080/admin/1 \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+---
+
+### 4. User Operations (Vehicle Check-in/Check-out)
+
+> ⚠️ **Important**: For check-in and check-out operations, you need to login as a **USER** (not ADMIN)
+
+**Login as user:**
+```bash
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "user",
+    "password": "user123"
+  }'
+```
+
+#### Vehicle Check-in
+
+```bash
+curl -X POST http://localhost:8080/api/check-in \
+  -H "Authorization: Bearer USER_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "licencePlate": "ABC1234",
+    "vehicleType": "CAR",
+    "parkingLotId": 1
+  }'
+```
+
+**Successful Response:**
 ```json
 {
-   "status": 404,
-   "error": "ENTITY_NOT_FOUND",
-   "message": "Vehicle is not found: 18397d1",
-   "timestamp": "2025-08-22T15:05:45.052231"
+  "entryDate": "2025-08-22T15:02:38.301553",
+  "parkingSlotNumber": 1,
+  "levelNumber": 1,
+  "parkingLotName": "Downtown Parking",
+  "parkingSlotType": "LARGE",
+  "licensePlate": "ABC1234",
+  "vehicleType": "CAR"
 }
 ```
 
-**Get list of available slots:**
+**Error Response (Invalid license plate):**
+```json
+{
+  "status": 400,
+  "error": "VALIDATION_ERROR",
+  "message": "Invalid car license plate format",
+  "timestamp": "2025-08-22T15:03:37.679242"
+}
+```
+
+#### Vehicle Check-out
+
 ```bash
-curl -X 'GET' \
-  'http://localhost:8080/api/2/available-slots' \
-  -H 'accept: */*' \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9....'
+curl -X POST http://localhost:8080/api/check-out \
+  -H "Authorization: Bearer USER_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "licensePlate": "ABC1234",
+    "parkingLotId": 1
+  }'
+```
+
+**Successful Response:**
+```json
+{
+  "entryDate": "2025-08-22T15:02:38.301553",
+  "exitDate": "2025-08-22T15:04:17.618682",
+  "duration": "0h 1m 39s",
+  "fee": 2
+}
+```
+
+**Error Response (Vehicle not found):**
+```json
+{
+  "status": 404,
+  "error": "ENTITY_NOT_FOUND",
+  "message": "Vehicle is not found: ABC1234",
+  "timestamp": "2025-08-22T15:05:45.052231"
+}
+```
+
+#### Check Available Slots
+
+```bash
+curl -X GET http://localhost:8080/api/1/available-slots \
+  -H "Authorization: Bearer USER_JWT_TOKEN"
 ```
 
 **Response:**
 ```json
 [
-   {
-      "levelId": 1,
-      "parkingSlotNumber": 2,
-      "type": "MOTORCYCLE",
-      "occupied": false
-   },
-   {
-      "levelId": 2,
-      "parkingSlotNumber": 1,
-      "type": "COMPACT",
-      "occupied": false
-   },
-   {
-      "levelId": 2,
-      "parkingSlotNumber": 2,
-      "type": "LARGE",
-      "occupied": false
-   },
-   {
-      "levelId": 2,
-      "parkingSlotNumber": 3,
-      "type": "MOTORCYCLE",
-      "occupied": false
-   }
+  {
+    "levelId": 1,
+    "parkingSlotNumber": 2,
+    "type": "MOTORCYCLE",
+    "occupied": false
+  },
+  {
+    "levelId": 2,
+    "parkingSlotNumber": 1,
+    "type": "COMPACT",
+    "occupied": false
+  },
+  {
+    "levelId": 2,
+    "parkingSlotNumber": 2,
+    "type": "LARGE",
+    "occupied": false
+  }
 ]
 ```
 
-**Response Failure example:**
+---
+
+### 5. Common Error Scenarios
+
+#### Invalid Slot Type
+```bash
+curl -X 'POST' \
+  'http://localhost:8080/admin/1/1/add-slot' \
+  -H 'accept: */*' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzM4NCJ9...' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "parkingSlotType": "INVALID"
+}'
+```
+
+**Response:**
 ```json
 {
-   "status": 404,
-   "error": "ENTITY_NOT_FOUND",
-   "message": "ParkingLot was not found by id: 3",
-   "timestamp": "2025-08-22T15:06:59.082073"
+  "status": 400,
+  "error": "INVALID_PARAMETER",
+  "message": "Invalid value 'INVALID' for parameter 'parkingSlotType'. Valid values are: [COMPACT, LARGE, MOTORCYCLE, HANDICAPPED]",
+  "timestamp": "2025-08-22T15:06:59.082073"
 }
 ```
 
-### Sample Data
+#### Parking Lot Not Found
+```bash
+curl -X GET http://localhost:8080/api/999/available-slots \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
 
-The application initializes with:
-- 1 Parking Lot with 2 Levels
-- Various parking slots on each level
-- Admin user for testing
+**Response:**
+```json
+{
+  "status": 404,
+  "error": "ENTITY_NOT_FOUND",
+  "message": "ParkingLot was not found by id: 999",
+  "timestamp": "2025-08-22T15:06:59.082073"
+}
+```
 
+---
 ## ⚠ Known Limitations
 
 ### Current Limitations
@@ -525,41 +538,9 @@ The application initializes with:
 
 ## 🚧 Future Enhancements
 
-### Short-term TODOs
 
-- [ ] Add slot reservation functionality
 - [ ] Enhanced error handling and logging
-
-### Medium-term Enhancements
-
 - [ ] Real-time slot availability with WebSockets
 - [ ] Advanced slot allocation algorithms
 - [ ] Reporting and analytics dashboard
-
-### Long-term Vision
-
 - [ ] External database integration (PostgreSQL/MySQL)
-- [ ] Message queue integration
-- [ ] Advanced monitoring and observability
-
-## 🧪 Testing
-
-### Running Tests
-
-```bash
-# Run all tests
-./gradlew test
-
-# Run specific test class
-./gradlew test --tests VehicleFactoryTest
-
-# Generate test coverage report
-./gradlew jacocoTestReport
-```
-
-### Test Categories
-
-- **Unit Tests**: Service layer, factory classes, utilities
-- **Integration Tests**: Repository layer, full API workflows
-- **Security Tests**: Authentication, authorization
-- **Validation Tests**: Input validation, error handling
