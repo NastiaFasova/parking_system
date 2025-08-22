@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class ParkingLotResponseDto {
     private String name;
-    private String id;
+    private Long id;
 }
