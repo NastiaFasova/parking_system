@@ -3,9 +3,11 @@ package demo.parkingsystem.service.impl;
 import demo.parkingsystem.dto.parkingLot.ParkingLotDto;
 import demo.parkingsystem.dto.parkingLot.ParkingLotResponseDto;
 import demo.parkingsystem.dto.parkingLot.ParkingLotWithLevelsDto;
+import demo.parkingsystem.dto.parkingSlot.AvailableParkingSlotDto;
 import demo.parkingsystem.mapper.ParkingLotMapper;
 import demo.parkingsystem.exceptions.AvailableSlotNotFoundException;
 import demo.parkingsystem.exceptions.EntityNotFoundByIdException;
+import demo.parkingsystem.mapper.ParkingSlotMapper;
 import demo.parkingsystem.model.Level;
 import demo.parkingsystem.model.ParkingLot;
 import demo.parkingsystem.model.ParkingSlot;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class ParkingLotServiceImpl implements ParkingLotService {
     private final ParkingLotRepository parkingLotRepository;
     private final ParkingLotMapper parkingLotMapper;
+    private final ParkingSlotMapper parkingSlotMapper;
 
     @Override
     public ParkingLotResponseDto create(ParkingLotDto parkingLotRequestDto) {
@@ -75,10 +78,11 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     }
 
     @Override
-    public List<ParkingSlot> geOccupiedParkingSlots(Long parkingLotId) {
+    public List<AvailableParkingSlotDto> geAvailableParkingSlots(Long parkingLotId) {
         return findById(parkingLotId).getLevels().stream()
                 .flatMap(l -> l.getParkingSlots().stream()
-                        .filter(s -> !s.isOccupied())).collect(Collectors.toList());
+                        .filter(s -> !s.isOccupied()))
+                .map(parkingSlotMapper::toAvailableSlotsDto).collect(Collectors.toList());
     }
 
     private Long calculateNextLevelNumber(ParkingLot parkingLot) {

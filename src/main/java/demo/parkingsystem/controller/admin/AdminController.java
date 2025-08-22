@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController()
-@RequestMapping("/admin/parking-lot")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
     private final ParkingLotService parkingLotService;
@@ -36,40 +36,40 @@ public class AdminController {
         return ResponseEntity.ok(parkingLotService.create(createParkingLotRequestDto));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<MessageDto> delete(@PathVariable("id") Long parkingLotId) {
+    @DeleteMapping("/{parking-id}")
+    public ResponseEntity<MessageDto> delete(@PathVariable("parking-id") Long parkingLotId) {
         parkingLotService.remove(parkingLotId);
         return ResponseEntity.ok(new MessageDto("Parking Lot was successfully removed"));
     }
 
-    @GetMapping("/{id}/add-level")
-    public ResponseEntity<ParkingLotWithLevelsDto> addLevel(@PathVariable("id") Long parkingLotId) {
+    @GetMapping("/{parking-id}/add-level")
+    public ResponseEntity<ParkingLotWithLevelsDto> addLevel(@PathVariable("parking-id") Long parkingLotId) {
         return ResponseEntity.ok(parkingLotService.addLevel(parkingLotId));
     }
 
-    @DeleteMapping("/{id}/remove-level/{level-id}")
-    public ResponseEntity<ParkingLotWithLevelsDto> removeLevel(@PathVariable("id") Long parkingLotId,
+    @DeleteMapping("/{parking-id}/{level-id}")
+    public ResponseEntity<ParkingLotWithLevelsDto> removeLevel(@PathVariable("parking-id") Long parkingLotId,
                                                      @PathVariable("level-id") Long levelId) {
         return ResponseEntity.ok(parkingLotService.removeLevel(parkingLotId, levelId));
     }
 
-    @GetMapping("/{id}/level-id/{level-id}/add-slot")
-    public ResponseEntity<LevelWithSlotsDto> addParkingSlot(@PathVariable("id") Long parkingLotId,
+    @GetMapping("/{parking-id}/{level-id}/add-slot")
+    public ResponseEntity<LevelWithSlotsDto> addParkingSlot(@PathVariable("parking-id") Long parkingLotId,
                                                             @PathVariable("level-id") Long levelId,
                                                             String parkingSlotType) {
         return ResponseEntity.ok(levelService.addParkingSlot(parkingLotId, levelId,
                 ParkingSlotType.valueOf(parkingSlotType)));
     }
 
-    @DeleteMapping("/{id}/level-id/{level-id}/remove-slot/{slot-id}")
-    public ResponseEntity<LevelWithSlotsDto> removeParkingSlot(@PathVariable("id") Long parkingLotId,
+    @DeleteMapping("/{parking-id}/{level-id}/{slot-id}")
+    public ResponseEntity<LevelWithSlotsDto> removeParkingSlot(@PathVariable("parking-id") Long parkingLotId,
                                                                @PathVariable("level-id") Long levelId,
                                                                @PathVariable("slot-id") Long slotId) {
         return ResponseEntity.ok(levelService.removeParkingSlot(parkingLotId, levelId, slotId));
     }
 
-    @PatchMapping("/{id}/level-id/{level-id}/slot-id/{slot-id}/status")
-    public ResponseEntity<ParkingSlotDto> changeStatus(@PathVariable("id") Long parkingLotId,
+    @PatchMapping("/{parking-id}/{level-id}/{slot-id}/status")
+    public ResponseEntity<ParkingSlotDto> changeStatus(@PathVariable("parking-id") Long parkingLotId,
                                                        @PathVariable("level-id") Long levelId,
                                                        @PathVariable("slot-id") Long slotId,
                                                        @RequestBody UpdateSlotStatusRequest updateSlotStatusRequest) {

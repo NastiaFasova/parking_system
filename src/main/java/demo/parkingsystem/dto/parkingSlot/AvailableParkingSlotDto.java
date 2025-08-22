@@ -4,7 +4,8 @@ import demo.parkingsystem.model.enums.ParkingSlotType;
 import lombok.Data;
 
 @Data
-public class ParkingSlotDto {
+public class AvailableParkingSlotDto {
+    private Long levelId;
     private Long parkingSlotNumber;
     private ParkingSlotType type;
     private boolean isOccupied;

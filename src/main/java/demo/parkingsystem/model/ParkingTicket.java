@@ -1,6 +1,5 @@
 package demo.parkingsystem.model;
 
-import demo.parkingsystem.model.enums.VehicleType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
